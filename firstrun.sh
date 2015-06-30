@@ -12,7 +12,7 @@
 function readConfigFileVariable(){
 
 local CONFIG_FILE="/config/wallabagConfig.cfg"
-local CONFIG_DTD_FILE="/config/wallabagCredentials.dtd"
+local CONFIG_DTD_FILE="/config/wallabagConfig.dtd"
 
 
 local STATUS=$1
