@@ -11,8 +11,8 @@
 #read one given variable from config file or set it by itself, but report if it is in the config or not
 function readConfigFileVariable(){
 
-local CONFIG_FILE="wallabagConfig.cfg"
-local CONFIG_DTD_FILE="wallabagCredentials.dtd"
+local CONFIG_FILE="/config/wallabagConfig.cfg"
+local CONFIG_DTD_FILE="/config/wallabagCredentials.dtd"
 
 
 local STATUS=$1

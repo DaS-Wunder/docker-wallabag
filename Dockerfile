@@ -103,7 +103,7 @@ RUN cd /var/www \
     && cd wallabag \ 
     && composer install
 
-COPY wallabagCredentials.dtd /config/wallabagCredentials.dtd
+COPY wallabagConfig.dtd /config/wallabagConfig.dtd
 
 #COPY 99_change_wallabag_config_salt.sh /etc/my_init.d/99_change_wallabag_config_salt.sh
 
