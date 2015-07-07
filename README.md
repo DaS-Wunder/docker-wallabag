@@ -15,6 +15,7 @@ Dockerfile used to build a wallabag docker image.
 # Credits
 
 This repository depends on a fork of [bobmaerten](https://github.com/bobmaerten/docker-wallabag)
+
 wallabag is an opensource project created by @nicosomb
 
 This docker image is build upon the baseimage made by phusion.
