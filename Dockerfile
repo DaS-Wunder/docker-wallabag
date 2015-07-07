@@ -59,9 +59,6 @@ RUN sed -i -e 's#\(bind-address.*=\).*#\1 0.0.0.0#g' /etc/mysql/my.cnf && \
 
 
 
-#Configure script which starts and the beginning of the container
-COPY firstrun.sh /etc/my_init.d/firstrun.sh
-
 # Configure php-fpm
 RUN echo "cgi.fix_pathinfo = 0" >> /etc/php5/fpm/php.ini
 COPY www.conf /etc/php5/fpm/pool.d/www.conf
@@ -103,7 +100,7 @@ RUN cd /var/www \
     && cd wallabag \ 
     && composer install
 
-COPY wallabagConfig.dtd /config/wallabagConfig.dtd
+COPY wallabagConfig.dtd /opt/wallabagConfig.dtd
 
 #COPY 99_change_wallabag_config_salt.sh /etc/my_init.d/99_change_wallabag_config_salt.sh
 
@@ -116,6 +113,9 @@ RUN chmod 755 -R /var/www/wallabag
 
 # Clean up APT when done.
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+#Configure script which starts and the beginning of the container
+COPY firstrun.sh /etc/my_init.d/firstrun.sh
 
 
 #Expose ports for http and https
