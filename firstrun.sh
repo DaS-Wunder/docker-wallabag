@@ -12,7 +12,7 @@
 function readConfigFileVariable(){
 
 local CONFIG_FILE="/config/wallabagConfig.cfg"
-local CONFIG_DTD_FILE="/config/wallabagConfig.dtd"
+local CONFIG_DTD_FILE="/opt/wallabagConfig.dtd"
 
 
 local STATUS=$1
@@ -212,16 +212,20 @@ if [  $WALLABAG_DATABASE_EXISTS -eq 1 ]; then
 				Cannot create Wallabag config file.
 				Please check if database username and password and
 				wallabag username,password and salt are given."
+				exit 1
 		else
 			
 			createWallabagConfigFile 	
 			echo "Success: Wallabag config file was created."
+			echo "Removing wallabag install directory."
+	                rm -R /var/www/wallabag/install
 		fi
 			
 	else
 		echo "Error: Cannot create Wallabag config file, because there is no
 			wallabagCredentials.cfg where i can read the credentials from
 			for your existing mariadb database."
+			exit 1
 	fi
 else
 
@@ -234,28 +238,6 @@ else
 		#Read Config File
 		readAllConfigFileVariables 0
 		
-		#########################################################
-		#							#
-		# 	Create config file with all used values		#
-		#	named wallabagConfig.save			#					
-		#							#
-		#########################################################
-
-		WALLABAG_SAVE_FILE="/config/wallabagConfig.save"
-		touch $WALLABAG_SAVE_FILE
-		echo "<credentials>
-			<wallabag></wallabag>
-			<mariadb></mariadb>
-			</credentials>" > $WALLABAG_SAVE_FILE
-
-		xmlstarlet ed --inplace -s credentials/mariadb -t elem -n username -v $DB_WALLABAG_USER   $WALLABAG_SAVE_FILE 
-		xmlstarlet ed --inplace -s credentials/mariadb -t elem -n password -v $DB_PASSWORD   $WALLABAG_SAVE_FILE
-
-		xmlstarlet ed --inplace -s credentials/wallabag -t elem -n username -v $WALLABAG_USER   $WALLABAG_SAVE_FILE
-		xmlstarlet ed --inplace  -s credentials/wallabag -t elem -n password -v $WALLABAG_PASSWORD   $WALLABAG_SAVE_FILE
-		xmlstarlet ed --inplace -s credentials/wallabag -t elem -n salt -v $SALT   $WALLABAG_SAVE_FILE
-
-
 
 		#########################################################
 		#							#
@@ -327,15 +309,41 @@ else
 			echo "Initialization complete."
 		fi
 
+		#########################################################
+		#							#
+		# 	Create config file with all used values		#
+		#	named wallabagConfig.save			#					
+		#							#
+		#########################################################
+		#get SALT from new created config file by wallabag
+		echo -e "$SALT befire \n"
+		SALT=$(grep -o -P "(?<=SALT', ').*(?=')" /var/www/wallabag/inc/poche/config.inc.php)
+		echo -e "$SALT after"
+
+		WALLABAG_SAVE_FILE="/config/wallabagConfig.save"
+		touch $WALLABAG_SAVE_FILE
+		echo "<credentials>
+			<wallabag></wallabag>
+			<mariadb></mariadb>
+			</credentials>" > $WALLABAG_SAVE_FILE
+
+		xmlstarlet ed --inplace -s credentials/mariadb -t elem -n username -v $DB_WALLABAG_USER   $WALLABAG_SAVE_FILE 
+		xmlstarlet ed --inplace -s credentials/mariadb -t elem -n password -v $DB_PASSWORD   $WALLABAG_SAVE_FILE
+
+		xmlstarlet ed --inplace -s credentials/wallabag -t elem -n username -v $WALLABAG_USER   $WALLABAG_SAVE_FILE
+		xmlstarlet ed --inplace  -s credentials/wallabag -t elem -n password -v $WALLABAG_PASSWORD   $WALLABAG_SAVE_FILE
+		xmlstarlet ed --inplace -s credentials/wallabag -t elem -n salt -v $SALT   $WALLABAG_SAVE_FILE
+
 
 		#########################################################
 		#							#
 		# 	Create wallabag config file			#
 		#							#
 		#########################################################
-		 
-#			createWallabagConfigFile 	
-			echo "Succesfull: Wallabag config was created successfully"	
+			#TODO SALT wird nur verwendet, wenn schon eine Datenbank vorhanden
+			# ist ansonsten wird der WErt ignoriert 
+			#createWallabagConfigFile 	
+			#echo "Succesfull: Wallabag config was created successfully"	
 	
 			echo "Removing wallabag install directory."
 			rm -R /var/www/wallabag/install
